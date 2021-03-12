@@ -1,0 +1,309 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{7DA723B0-FDB8-4F6C-930A-61C6AF778E10}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Shenlong</RootNamespace>
+    <AssemblyName>shenlong</AssemblyName>
+    <ApplicationIcon>App.ico</ApplicationIcon>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <IsWebBootstrapper>true</IsWebBootstrapper>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <PublishUrl>http://localhost/shenlong/</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Web</InstallFrom>
+    <UpdateEnabled>true</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;ENABLED_SUBQUERY,xWITHIN_SHENGLOBAL,NEW_GETPLAINTABLEFIELDNAME</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;ENABLED_SUBQUERY,NEW_GETPLAINTABLEFIELDNAME</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;ENABLED_SUBQUERY,xWITHIN_SHENGLOBAL,NEW_GETPLAINTABLEFIELDNAME</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;ENABLED_SUBQUERY,NEW_GETPLAINTABLEFIELDNAME</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Oracle.ManagedDataAccess, Version=4.122.1.0, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>dlls\Oracle.ManagedDataAccess.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.OracleClient" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AboutDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AboutDlg.Designer.cs">
+      <DependentUpon>AboutDlg.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ColumnPropertyDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ColumnPropertyDlg.Designer.cs">
+      <DependentUpon>ColumnPropertyDlg.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CommonFunctions.cs" />
+    <Compile Include="CopyQueryColumnDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CopyQueryColumnDlg.Designer.cs">
+      <DependentUpon>CopyQueryColumnDlg.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ExecuteQueryDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ExecuteQueryDlg.Designer.cs">
+      <DependentUpon>ExecuteQueryDlg.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FilePropertyDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FilePropertyDlg.Designer.cs">
+      <DependentUpon>FilePropertyDlg.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ParamInputDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ParamInputDlg.Designer.cs">
+      <DependentUpon>ParamInputDlg.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ListViewEx.cs" />
+    <Compile Include="LogOnDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LogOnDlg.Designer.cs">
+      <DependentUpon>LogOnDlg.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MySplitContainer.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MySplitContainer.Designer.cs">
+      <DependentUpon>MySplitContainer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MyToolStripProgressBar.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MyToolStripProgressBar.Designer.cs">
+      <DependentUpon>MyToolStripProgressBar.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OptionDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="OptionDlg.Designer.cs">
+      <DependentUpon>OptionDlg.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ProgUpdateClass.cs" />
+    <Compile Include="ProgUpdateMessage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ProgUpdateMessage.designer.cs" />
+    <Compile Include="ProgUpdateRemoteCheck.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ProgUpdateRemoteCheck.Designer.cs" />
+    <Compile Include="ShenGlobal.cs" />
+    <Compile Include="Shenlong.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Shenlong.Designer.cs">
+      <DependentUpon>Shenlong.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="AboutDlg.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>AboutDlg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ExecuteQueryDlg.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ExecuteQueryDlg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LogOnDlg.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>LogOnDlg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OptionDlg.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>OptionDlg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProgUpdateMessage.resx" />
+    <EmbeddedResource Include="ProgUpdateRemoteCheck.resx" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Shenlong.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Shenlong.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App.ico" />
+    <Content Include="images\textClear.ico" />
+    <None Include="images\customTableSelect.ico" />
+    <None Include="images\qcProperty.ico" />
+    <None Include="images\noCheckSameColumn.ico" />
+    <None Include="images\paramInput.ico" />
+    <None Include="images\copy.ico" />
+    <None Include="images\cut.ico" />
+    <None Include="images\bubbles.ico" />
+    <None Include="images\property.ico" />
+    <None Include="images\helpContents.ico" />
+    <None Include="images\way.ico" />
+    <None Include="images\queryColumn.ico" />
+    <None Include="images\selectColumnDD.ico" />
+    <None Include="images\tableJoin.ico" />
+    <None Include="images\sort.ico" />
+    <None Include="images\remove.ico" />
+    <None Include="images\folder.ico" />
+    <None Include="images\exit.ico" />
+    <None Include="images\SQLPLUSICON.ico" />
+    <None Include="images\option.ico" />
+    <None Include="images\removeEndColumn.ico" />
+    <None Include="images\excel.ico" />
+    <None Include="images\netca_01.ico" />
+    <EmbeddedResource Include="ColumnPropertyDlg.resx">
+      <DependentUpon>ColumnPropertyDlg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CopyQueryColumnDlg.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>CopyQueryColumnDlg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FilePropertyDlg.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FilePropertyDlg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ParamInputDlg.resx">
+      <DependentUpon>ParamInputDlg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MySplitContainer.resx">
+      <DependentUpon>MySplitContainer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\copy.cur" />
+    <EmbeddedResource Include="Resources\link.cur" />
+    <EmbeddedResource Include="Resources\move.cur" />
+    <EmbeddedResource Include="Resources\none.cur" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="VBIDE">
+      <Guid>{0002E157-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>5</VersionMajor>
+      <VersionMinor>3</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
