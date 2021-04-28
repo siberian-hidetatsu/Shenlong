@@ -10,7 +10,8 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Shenlong</RootNamespace>
     <AssemblyName>shenlong</AssemblyName>
-    <ApplicationIcon>App.ico</ApplicationIcon>
+    <ApplicationIcon>
+    </ApplicationIcon>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
@@ -89,179 +90,6 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AboutDlg.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="AboutDlg.Designer.cs">
-      <DependentUpon>AboutDlg.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ColumnPropertyDlg.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ColumnPropertyDlg.Designer.cs">
-      <DependentUpon>ColumnPropertyDlg.cs</DependentUpon>
-    </Compile>
-    <Compile Include="CommonFunctions.cs" />
-    <Compile Include="CopyQueryColumnDlg.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="CopyQueryColumnDlg.Designer.cs">
-      <DependentUpon>CopyQueryColumnDlg.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ExecuteQueryDlg.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ExecuteQueryDlg.Designer.cs">
-      <DependentUpon>ExecuteQueryDlg.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FilePropertyDlg.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FilePropertyDlg.Designer.cs">
-      <DependentUpon>FilePropertyDlg.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ParamInputDlg.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ParamInputDlg.Designer.cs">
-      <DependentUpon>ParamInputDlg.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ListViewEx.cs" />
-    <Compile Include="LogOnDlg.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="LogOnDlg.Designer.cs">
-      <DependentUpon>LogOnDlg.cs</DependentUpon>
-    </Compile>
-    <Compile Include="MySplitContainer.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="MySplitContainer.Designer.cs">
-      <DependentUpon>MySplitContainer.cs</DependentUpon>
-    </Compile>
-    <Compile Include="MyToolStripProgressBar.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="MyToolStripProgressBar.Designer.cs">
-      <DependentUpon>MyToolStripProgressBar.cs</DependentUpon>
-    </Compile>
-    <Compile Include="OptionDlg.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="OptionDlg.Designer.cs">
-      <DependentUpon>OptionDlg.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ProgUpdateClass.cs" />
-    <Compile Include="ProgUpdateMessage.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ProgUpdateMessage.designer.cs" />
-    <Compile Include="ProgUpdateRemoteCheck.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ProgUpdateRemoteCheck.Designer.cs" />
-    <Compile Include="ShenGlobal.cs" />
-    <Compile Include="Shenlong.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Shenlong.Designer.cs">
-      <DependentUpon>Shenlong.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="AboutDlg.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>AboutDlg.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ExecuteQueryDlg.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>ExecuteQueryDlg.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="LogOnDlg.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>LogOnDlg.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="OptionDlg.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>OptionDlg.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ProgUpdateMessage.resx" />
-    <EmbeddedResource Include="ProgUpdateRemoteCheck.resx" />
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <SubType>Designer</SubType>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Shenlong.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>Shenlong.cs</DependentUpon>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="App.ico" />
-    <Content Include="images\textClear.ico" />
-    <None Include="images\customTableSelect.ico" />
-    <None Include="images\qcProperty.ico" />
-    <None Include="images\noCheckSameColumn.ico" />
-    <None Include="images\paramInput.ico" />
-    <None Include="images\copy.ico" />
-    <None Include="images\cut.ico" />
-    <None Include="images\bubbles.ico" />
-    <None Include="images\property.ico" />
-    <None Include="images\helpContents.ico" />
-    <None Include="images\way.ico" />
-    <None Include="images\queryColumn.ico" />
-    <None Include="images\selectColumnDD.ico" />
-    <None Include="images\tableJoin.ico" />
-    <None Include="images\sort.ico" />
-    <None Include="images\remove.ico" />
-    <None Include="images\folder.ico" />
-    <None Include="images\exit.ico" />
-    <None Include="images\SQLPLUSICON.ico" />
-    <None Include="images\option.ico" />
-    <None Include="images\removeEndColumn.ico" />
-    <None Include="images\excel.ico" />
-    <None Include="images\netca_01.ico" />
-    <EmbeddedResource Include="ColumnPropertyDlg.resx">
-      <DependentUpon>ColumnPropertyDlg.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CopyQueryColumnDlg.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>CopyQueryColumnDlg.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FilePropertyDlg.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>FilePropertyDlg.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ParamInputDlg.resx">
-      <DependentUpon>ParamInputDlg.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MySplitContainer.resx">
-      <DependentUpon>MySplitContainer.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\copy.cur" />
-    <EmbeddedResource Include="Resources\link.cur" />
-    <EmbeddedResource Include="Resources\move.cur" />
-    <EmbeddedResource Include="Resources\none.cur" />
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <COMReference Include="VBIDE">
       <Guid>{0002E157-0000-0000-C000-000000000046}</Guid>
       <VersionMajor>5</VersionMajor>
@@ -297,6 +125,13 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="branch-images\excel output.png" />
+    <Content Include="branch-images\shenlong main screen.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
