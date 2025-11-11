@@ -4619,9 +4619,9 @@ namespace Shenlong
 				{
 					buildedSql = textSQL.Text.Trim();
 					columnComments = null;
-					if ( string.Compare(buildedSql, 0, "SELECT", 0, 6, true) != 0 )
+					if ( string.Compare(buildedSql, 0, "SELECT", 0, 6, true) != 0 && string.Compare(buildedSql, 0, "WITH", 0, 4, true) != 0 )
 					{
-						MyMessageBox.Show("SELECT 以外は指定できません", appTitle, MessageBoxButtons.OK, MessageBoxIcon.Stop);
+						MyMessageBox.Show("SELECT,WITH 以外は指定できません", appTitle, MessageBoxButtons.OK, MessageBoxIcon.Stop);
 						return;
 					}
 
@@ -6623,11 +6623,14 @@ namespace Shenlong
 					// Start a new workbook in Excel.
 					/*m_objExcel = new Excel.Application();*/
 					m_objExcel = Activator.CreateInstance(Type.GetTypeFromProgID("Excel.Application"));
-				}
+                }
 
-				// Book
-				/*m_objBooks = (Excel.Workbooks)m_objExcel.Workbooks;*/
-				m_objBooks = m_objExcel.GetType().InvokeMember("Workbooks", BindingFlags.GetProperty, null, m_objExcel, null);
+                m_objExcel.GetType().InvokeMember("Visible", BindingFlags.SetProperty, null, m_objExcel, new object[] { true });
+                //throw new Exception("test");
+
+                // Book
+                /*m_objBooks = (Excel.Workbooks)m_objExcel.Workbooks;*/
+                m_objBooks = m_objExcel.GetType().InvokeMember("Workbooks", BindingFlags.GetProperty, null, m_objExcel, null);
 
 				if ( (pasteQueryResultToExcel == pasteExcel.actBookActSheet) || (pasteQueryResultToExcel == pasteExcel.actBookNewSheet) )
 				{
@@ -6688,11 +6691,11 @@ namespace Shenlong
 				/*m_objExcel.Visible = true;*/
 				m_objExcel.GetType().InvokeMember("Visible", BindingFlags.SetProperty, null, m_objExcel, new object[] { true });
 
-				//m_objBooks.OpenText(@"C:\Documents and Settings\Hidetatsu\My Documents\Visual Studio 2005\Projects\Visual C#\Shenlong\bin\Debug\~QueryOutput.txt", Excel.XlPlatform.xlWindows, 1, Excel.XlTextParsingType.xlDelimited, Excel.XlTextQualifier.xlTextQualifierDoubleQuote, false, false, false, true, false, false, Missing.Value, Missing.Value, Missing.Value, Missing.Value, Missing.Value, Missing.Value, Missing.Value);
+                //m_objBooks.OpenText(@"C:\Documents and Settings\Hidetatsu\My Documents\Visual Studio 2005\Projects\Visual C#\Shenlong\bin\Debug\~QueryOutput.txt", Excel.XlPlatform.xlWindows, 1, Excel.XlTextParsingType.xlDelimited, Excel.XlTextQualifier.xlTextQualifierDoubleQuote, false, false, false, true, false, false, Missing.Value, Missing.Value, Missing.Value, Missing.Value, Missing.Value, Missing.Value, Missing.Value);
 
-				// Sheet
-				/*m_objSheets = (Excel.Sheets)m_objBook.Worksheets;*/
-				m_objSheets = m_objBook.GetType().InvokeMember("Worksheets", BindingFlags.GetProperty, null, m_objBook, null);
+                // Sheet
+                /*m_objSheets = (Excel.Sheets)m_objBook.Worksheets;*/
+                m_objSheets = m_objBook.GetType().InvokeMember("Worksheets", BindingFlags.GetProperty, null, m_objBook, null);
 
 				if ( (pasteQueryResultToExcel == pasteExcel.newBookActSheet) || (pasteQueryResultToExcel == pasteExcel.actBookActSheet) )
 				{
