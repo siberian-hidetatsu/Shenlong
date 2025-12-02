@@ -7,24 +7,26 @@
 #define	UPDATE_20140729
 #define	UPDATE_20160316
 #define	UPDATE_20191120
+#define	UPDATE_20251202
+using CommonFunctions;
+using Oracle.ManagedDataAccess.Client;
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Linq;
-using System.IO;
-using Oracle.ManagedDataAccess.Client;
-using System.Reflection;
-using System.Diagnostics;
-using System.Collections;
-using System.Runtime.InteropServices;
-using System.Threading;
-using CommonFunctions;
+using static CommonFunctions.api;
 #if !EXCEL_LATE_BINDING
 using Excel = Microsoft.Office.Interop.Excel;
 #endif
@@ -3238,14 +3240,17 @@ namespace Shenlong
 			}
 			listBoxColumnList.Items.Add("*" + new string('\t', maxTabColumnName) + "" + new string('\t', maxTabDataType) + "" + new string('\t', maxTabComments) + "");
 			//swDebugLog.Close();
+#if UPDATE_20251202
+			UpdateHorizontalExtent(listBoxColumnList);
+#endif
 		}
 
 #if TABLE_NAME_HAS_ALIAS
-		/// <summary>
-		/// リストボックスのテーブル名を取得する
-		/// </summary>
-		/// <returns></returns>
-		private string GetListBoxTableName(selTbl seltbl)
+        /// <summary>
+        /// リストボックスのテーブル名を取得する
+        /// </summary>
+        /// <returns></returns>
+        private string GetListBoxTableName(selTbl seltbl)
 		{
 			return GetListBoxTableName(listBoxTableList.SelectedIndex, seltbl);
 		}
@@ -8326,13 +8331,22 @@ namespace Shenlong
 					}
 				}
 
+#if UPDATE_20251202
+				var flags = TextFormatFlags.NoPadding | TextFormatFlags.ExpandTabs | TextFormatFlags.NoPrefix;
+				var bounds = e.Bounds;
+				bounds.X += 2;
+				bounds.Width -= 2;
+
+                TextRenderer.DrawText(e.Graphics, (string)listBoxColumnList.Items[e.Index], e.Font, bounds, listBoxColumnList.ForeColor, flags);
+
+				e.DrawFocusRectangle();
+#else
 				Brush brush = new SolidBrush(listBoxColumnList.ForeColor);
 
 				e.Graphics.DrawString((string)listBoxColumnList.Items[e.Index], e.Font, brush, rect);
 
-				e.DrawFocusRectangle();
-
 				brush.Dispose();
+#endif
 			}
 			catch ( Exception exp )
 			{
@@ -8340,12 +8354,34 @@ namespace Shenlong
 			}
 		}
 
-		/// <summary>
-		/// タブ コントロールの選択が変更された
+#if UPDATE_20251202
+        /// <summary>
+		/// 最大幅を計測して HorizontalExtent を更新
 		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
+		/// <param name="lb"></param>
+		void UpdateHorizontalExtent(ListBox lb)
+        {
+            var flags = TextFormatFlags.NoPadding | TextFormatFlags.ExpandTabs | TextFormatFlags.NoPrefix;
+            int maxWidth = 0;
+
+            foreach (var item in lb.Items)
+            {
+                var text = item?.ToString() ?? "";
+                // ExpandTabs を計測側にも適用する
+                var size = TextRenderer.MeasureText(text, lb.Font, new Size(int.MaxValue, int.MaxValue), flags);
+                if (size.Width > maxWidth) maxWidth = size.Width;
+            }
+
+            lb.HorizontalExtent = maxWidth + 4; // 余白ぶん
+        }
+#endif
+
+        /// <summary>
+        /// タブ コントロールの選択が変更された
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			try
 			{
@@ -9960,6 +9996,6 @@ namespace Shenlong
 				}
 			}
 		}
-        #endregion
+		#endregion
     }
 }
