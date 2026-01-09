@@ -1,3 +1,4 @@
+#define	UPDATE_20260109
 using System;
 using System.Collections;
 using System.ComponentModel;
@@ -465,7 +466,11 @@ namespace ListViewEx
 
 				_editingControl = c;
 				_editingControl.Leave += new EventHandler(_editControl_Leave);
+#if !UPDATE_20260109
 				_editingControl.KeyPress += new KeyPressEventHandler(_editControl_KeyPress);
+#else
+				_editingControl.KeyDown += new KeyEventHandler(_editControl_KeyDown);
+#endif
 
 				//System.Diagnostics.Debug.WriteLine("_editSubItem = SubItem:" + _editSubItem + " " + SubItem);
 				_editItem = Item;
@@ -476,18 +481,19 @@ namespace ListViewEx
 				Debug.WriteLine(exp.Message);
 			}
 		}
-		
-		/// <summary>
-		/// _editControl_Leave
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void _editControl_Leave(object sender, EventArgs e)
+
+        /// <summary>
+        /// _editControl_Leave
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void _editControl_Leave(object sender, EventArgs e)
 		{
 			// cell editor losing focus
 			EndEditing(true);
 		}
-				
+
+#if !UPDATE_20260109
 		/// <summary>
 		/// _editControl_KeyPress
 		/// </summary>
@@ -510,6 +516,38 @@ namespace ListViewEx
 				}
 			}
 		}
+#else
+		/// <summary>
+		/// _editControl_KeyDown
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void _editControl_KeyDown(object sender, KeyEventArgs e)
+		{
+			switch (e.KeyCode)
+			{
+				case Keys.Escape:
+				{
+					EndEditing(false);
+
+					// 既定のキー処理（ビープ＆フォーカス移動等）を抑止
+					e.SuppressKeyPress = true;
+					//e.Handled = true;
+					break;
+				}
+
+				case Keys.Enter:
+				{
+					EndEditing(true);
+
+					// 既定のキー処理（ビープ＆フォーカス移動等）を抑止
+					e.SuppressKeyPress = true;
+					//e.Handled = true;
+					break;
+				}
+			}
+		}
+#endif
 
 		/// <summary>
 		/// Accept or discard current value of cell editor control
@@ -541,9 +579,13 @@ namespace ListViewEx
 				_editItem.SubItems[_editSubItem].Text = e.DisplayText;
 
 				_editingControl.Leave -= new EventHandler(_editControl_Leave);
+#if !UPDATE_20260109
 				_editingControl.KeyPress -= new KeyPressEventHandler(_editControl_KeyPress);
+#else
+                _editingControl.KeyDown -= new KeyEventHandler(_editControl_KeyDown);
+#endif
 
-				_editingControl.Visible = false;
+                _editingControl.Visible = false;
 
 				_editingControl = null;
 				_editItem = null;
@@ -556,6 +598,6 @@ namespace ListViewEx
 				Debug.WriteLine(exp.Message);
 			}
 		}
-		#endregion
+#endregion
 	}
 }

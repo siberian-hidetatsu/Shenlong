@@ -307,8 +307,11 @@ namespace Shenlong
 		{
 			InitializeComponent();
 
-			try
-			{
+            if (DesignMode)
+                return;
+
+            try
+            {
 				osPlatform = common.GetOsPlatform();
 				if ( Program.debMode )
 				{
@@ -532,8 +535,11 @@ namespace Shenlong
 		/// <param name="e"></param>
 		private void Shenlong_Load(object sender, EventArgs e)
 		{
-			try
-			{
+            if (DesignMode)
+                return;
+
+            try
+            {
 				MyMessageBox._mainForm = this;
 
 				this.MinimumSize = this.Size;	// WM_SIZING ÇïﬂÇ‹Ç¶ÇƒèàóùÇ∑ÇÈë„ÇÌÇË
