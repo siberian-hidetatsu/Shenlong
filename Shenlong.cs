@@ -8,6 +8,7 @@
 #define	UPDATE_20160316
 #define	UPDATE_20191120
 #define	UPDATE_20251202
+#define	UPDATE_20260121
 using CommonFunctions;
 using Oracle.ManagedDataAccess.Client;
 using System;
@@ -23,10 +24,12 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
+using System.Web;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Linq;
 using static CommonFunctions.api;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
 #if !EXCEL_LATE_BINDING
 using Excel = Microsoft.Office.Interop.Excel;
 #endif
@@ -528,15 +531,15 @@ namespace Shenlong
 			base.WndProc(ref m);
 		}
 
-		/// <summary>
-		/// Shenlong_Load
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void Shenlong_Load(object sender, EventArgs e)
+        /// <summary>
+        /// Shenlong_Load
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Shenlong_Load(object sender, EventArgs e)
 		{
-            if (DesignMode)
-                return;
+			if (DesignMode)
+				return;
 
             try
             {
@@ -2040,8 +2043,41 @@ namespace Shenlong
 						  "order by\r\n" +
 						  " user_ind_columns.index_name,\r\n" +
 						  " user_ind_columns.column_position";
+#if UPDATE_20260121
+					sql = "select\r\n" +
+						  " aic.table_owner,\r\n" +
+						  " aic.table_name,\r\n" +
+						  " aic.index_name,\r\n" +
+						  " ai.uniqueness,\r\n" +				// UNIQUE or NONUNIQUE
+						  " ai.index_type,\r\n" +				// NORMAL, BITMAP, FUNCTION - BASED NORMAL ‚È‚Ç
+						  " ai.visibility,\r\n" +				// VISIBLE / INVISIBLE
+                          " ai.status as valid_status,\r\n" +	// VALID / UNUSABLE
+						  " aic.column_position,\r\n" +
+						  " aic.column_name,\r\n" +
+						  " ac.constraint_name,\r\n" +
+						  " ac.constraint_type,\r\n" +			// P / U
+						  " ac.deferrable,\r\n" +
+						  " ac.deferred,\r\n" +
+						  " ac.status\r\n" +
+						  "from\r\n" +
+						 $" all_ind_columns{_dbLink} aic\r\n" +
+						 $" join all_indexes{_dbLink} ai\r\n" +
+						  "  on ai.owner = aic.index_owner\r\n" +
+						  "   and ai.index_name = aic.index_name\r\n" +
+						 $" left join all_constraints{_dbLink} ac\r\n" +
+						  "  on ac.owner = aic.table_owner\r\n" +
+						  "   and ac.table_name = aic.table_name\r\n" +
+						  "   and ac.index_name = aic.index_name\r\n" +
+						  "   and ac.constraint_type IN('P','U')\r\n" +
+						  "where\r\n" +
+						 $" aic.table_name = '{tableName}'\r\n" +
+						 //$" and aic.table_owner = '{tableOwner}'\r\n" +
+                          "order by\r\n" +
+						  " aic.index_name,\r\n" +
+						  " aic.column_position\r\n";
+#endif
 
-					if ( Program.expertMode && toolStripCustomTableSelect.Checked )
+                    if ( Program.expertMode && toolStripCustomTableSelect.Checked )
 					{
 						if ( tableOwner != null )
 						{
@@ -2118,8 +2154,11 @@ namespace Shenlong
 #if UPDATE_20160316
 						string constraint_type = oraReader["constraint_type"].ToString();
 						string status = oraReader["status"].ToString();
+#if UPDATE_20260121
+						string uniqueness = oraReader["uniqueness"].ToString();
+#endif
 
-						if ( lastIndexName != indexName )
+                        if ( lastIndexName != indexName )
 						{
 							string index = "+ " + indexName;
 							if ( constraint_type == "P")
@@ -2129,6 +2168,9 @@ namespace Shenlong
 							}
 							else
 							{
+#if UPDATE_20260121
+								index += (uniqueness == "UNIQUE" ? $" ({uniqueness})" : "");
+#endif
 								secondaryKey.Append(index + "\r\n");
 							}
 
