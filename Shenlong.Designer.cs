@@ -89,6 +89,7 @@
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.contextMenuTableJoin = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuReleaseJoin = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuJoinWay = new System.Windows.Forms.ToolStripMenuItem();
@@ -97,6 +98,8 @@
             this.toolStripMenuRightJoin = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuFullOuterJoin = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuSwapColumn = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator13 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripMenuJoinProperty = new System.Windows.Forms.ToolStripMenuItem();
             this.tabQueryColumn = new System.Windows.Forms.TabPage();
             this.checkStretchColumnWidth = new System.Windows.Forms.CheckBox();
             this.checkShowField = new System.Windows.Forms.CheckBox();
@@ -368,7 +371,8 @@
             this.lvTableJoin.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
             this.columnHeader2,
-            this.columnHeader3});
+            this.columnHeader3,
+            this.columnHeader4});
             this.lvTableJoin.ContextMenuStrip = this.contextMenuTableJoin;
             this.lvTableJoin.Font = new System.Drawing.Font("ＭＳ ゴシック", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.lvTableJoin.FullRowSelect = true;
@@ -398,15 +402,21 @@
             this.columnHeader3.Text = "右のテーブル項目";
             this.columnHeader3.Width = 250;
             // 
+            // columnHeader4
+            // 
+            this.columnHeader4.Text = "プロパティ";
+            // 
             // contextMenuTableJoin
             // 
             this.contextMenuTableJoin.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.contextMenuTableJoin.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuReleaseJoin,
             this.toolStripMenuJoinWay,
-            this.toolStripMenuSwapColumn});
+            this.toolStripMenuSwapColumn,
+            this.toolStripSeparator13,
+            this.toolStripMenuJoinProperty});
             this.contextMenuTableJoin.Name = "contextMenuTableJoin";
-            this.contextMenuTableJoin.Size = new System.Drawing.Size(215, 82);
+            this.contextMenuTableJoin.Size = new System.Drawing.Size(215, 114);
             this.contextMenuTableJoin.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuTableJoin_Opening);
             // 
             // toolStripMenuReleaseJoin
@@ -464,6 +474,18 @@
             this.toolStripMenuSwapColumn.Size = new System.Drawing.Size(214, 26);
             this.toolStripMenuSwapColumn.Text = "左右の項目を入替(&C)";
             this.toolStripMenuSwapColumn.Click += new System.EventHandler(this.toolStripMenuSwapColumn_Click);
+            // 
+            // toolStripSeparator13
+            // 
+            this.toolStripSeparator13.Name = "toolStripSeparator13";
+            this.toolStripSeparator13.Size = new System.Drawing.Size(211, 6);
+            // 
+            // toolStripMenuJoinProperty
+            // 
+            this.toolStripMenuJoinProperty.Image = global::Shenlong.Properties.Resources.qcProperty;
+            this.toolStripMenuJoinProperty.Name = "toolStripMenuJoinProperty";
+            this.toolStripMenuJoinProperty.Size = new System.Drawing.Size(214, 26);
+            this.toolStripMenuJoinProperty.Text = "プロパティ(&R)";
             // 
             // tabQueryColumn
             // 
@@ -601,7 +623,7 @@
             this.lveQueryColumn.MultiSelect = false;
             this.lveQueryColumn.Name = "lveQueryColumn";
             this.lveQueryColumn.OwnerDraw = true;
-            this.lveQueryColumn.Size = new System.Drawing.Size(505, 163);
+            this.lveQueryColumn.Size = new System.Drawing.Size(505, 153);
             this.lveQueryColumn.TabIndex = 8;
             this.lveQueryColumn.UseCompatibleStateImageBehavior = false;
             this.lveQueryColumn.ValidItemCount = 64;
@@ -1625,6 +1647,9 @@
 		private System.Windows.Forms.TextBox textColumnFilter;
 		private System.Windows.Forms.PictureBox pictureBoxClearTableFilter;
 		private System.Windows.Forms.PictureBox pictureBoxClearColumnFilter;
-	}
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuJoinProperty;
+        private System.Windows.Forms.ColumnHeader columnHeader4;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator13;
+    }
 }
 

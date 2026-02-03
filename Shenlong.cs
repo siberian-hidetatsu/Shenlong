@@ -9,6 +9,7 @@
 #define	UPDATE_20191120
 #define	UPDATE_20251202
 #define	UPDATE_20260121
+#define	UPDATE_20260202
 using CommonFunctions;
 using Oracle.ManagedDataAccess.Client;
 using System;
@@ -138,9 +139,9 @@ namespace Shenlong
 		private enum oraon { success, none, cancel, exception };
 		public enum tableSelAct { showColumns, clearSelectedColumns, appendAllColumns };
 		public enum pasteExcel { none, newBookActSheet, actBookActSheet, actBookNewSheet, shenBookNewSheet };
-		public enum omw { OracleClient, OleDb, oo4o };		// 兼 OraConnWare@shenlong.exe.config の value
+		public enum omw { OracleClient, OleDb, oo4o };      // 兼 OraMiddleware@shenlong.exe.config の value
 
-		private Cursor noneCursor = null;
+        private Cursor noneCursor = null;
 		private Cursor moveCursor = null;
 		private Cursor copyCursor = null;
 		private Cursor linkCursor = null;
@@ -303,10 +304,17 @@ namespace Shenlong
 
 		private common.platform osPlatform;
 
-		/// <summary>
-		/// コンストラクタ
-		/// </summary>
-		public Shenlong()
+#if UPDATE_20260202
+		private readonly ToolTip _toolTipQueryColumn = new ToolTip();	// クエリー項目用のツールチップ
+
+		private readonly ToolTip _toolTipTableJoin = new ToolTip();     // テーブル結合用のツールチップ
+        private int lastTableJoinItemIndex = -1;						// 前回のマウスポインタのあったインデックス
+#endif
+
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        public Shenlong()
 		{
 			InitializeComponent();
 
@@ -473,8 +481,40 @@ namespace Shenlong
                     lvTableJoin.DrawColumnHeader += new DrawListViewColumnHeaderEventHandler(lvTableJoin_DrawColumnHeader);
                     lvTableJoin.DrawSubItem += new DrawListViewSubItemEventHandler(lvTableJoin_DrawSubItem);
                 }
-			}
-			catch ( Exception exp )
+
+#if UPDATE_20260202
+				lvTableJoin.Columns[(int)ShenGlobal.tabJoin.property].Width = 0;
+
+                #region テーブル結合のツールチップ初期化
+                _toolTipTableJoin.InitialDelay = 500;
+                _toolTipTableJoin.ReshowDelay = 100;
+                _toolTipTableJoin.AutoPopDelay = 5000;   // 表示時間
+                _toolTipTableJoin.UseAnimation = true;
+                _toolTipTableJoin.UseFading = true;
+                _toolTipTableJoin.ShowAlways = false;
+
+                lvTableJoin.MouseMove += lvTableJoin_MouseMove;
+				lvTableJoin.MouseLeave += (s, e) => { _toolTipTableJoin.Hide(lvTableJoin); lastTableJoinItemIndex = -1; };
+                #endregion
+
+                this.toolStripMenuJoinProperty.Click += new System.EventHandler(this.toolStripMenuJoinProperty_Click);
+
+                #region クエリー項目のツールチップ初期化
+                // 競合回避：アイテム側のツールチップは無効化（必要に応じて）
+                lveQueryColumn.ShowItemToolTips = false;
+
+				_toolTipQueryColumn.InitialDelay = 500;
+                _toolTipQueryColumn.ReshowDelay = 100;
+                _toolTipQueryColumn.AutoPopDelay = 5000;   // 表示時間
+                _toolTipQueryColumn.UseAnimation = true;
+                _toolTipQueryColumn.UseFading = true;
+                _toolTipQueryColumn.ShowAlways = false;
+
+				lveQueryColumn.MouseLeave += (s, e) => { _toolTipQueryColumn.Hide(lveQueryColumn); lastQueryColumn = -1; };
+                #endregion
+#endif
+            }
+            catch ( Exception exp )
 			{
 				MessageBox.Show(exp.Message, MethodBase.GetCurrentMethod().Name, MessageBoxButtons.OK, MessageBoxIcon.Stop);
 				this.Close();
@@ -1527,14 +1567,17 @@ namespace Shenlong
 				}
 
 				// テーブル結合
-				foreach ( XmlNode tableJoin in xmlCopiedShenlongColumn.DocumentElement.SelectNodes(ShenGlobal.tagTableJoin) )
+				foreach (XmlNode tableJoin in xmlCopiedShenlongColumn.DocumentElement.SelectNodes(ShenGlobal.tagTableJoin))
 				{
-					if ( HasTableJoin(tableJoin.Attributes[ShenGlobal.tabJoin.leftTabCol.ToString()].Value, tableJoin.Attributes[ShenGlobal.tabJoin.rightTabCol.ToString()].Value, 2) != -1 )
+					if (HasTableJoin(tableJoin.Attributes[ShenGlobal.tabJoin.leftTabCol.ToString()].Value, tableJoin.Attributes[ShenGlobal.tabJoin.rightTabCol.ToString()].Value, 2) != -1)
 						continue;
 
 					ListViewItem lvi = new ListViewItem(tableJoin.Attributes[ShenGlobal.tabJoin.leftTabCol.ToString()].Value);
 					lvi.SubItems.Add(tableJoin.Attributes[ShenGlobal.tabJoin.way.ToString()].Value);
 					lvi.SubItems.Add(tableJoin.Attributes[ShenGlobal.tabJoin.rightTabCol.ToString()].Value);
+#if UPDATE_20260202
+					lvi.SubItems.Add(tableJoin.Attributes[ShenGlobal.tabJoin.property.ToString()].Value);
+#endif
 					lvTableJoin.Items.Add(lvi);
 				}
 			}
@@ -3943,6 +3986,16 @@ namespace Shenlong
 					lvi.SubItems.Add(tableJoin.Attributes[ShenCore.tabJoin.way.ToString()].Value);
 #endif
 					lvi.SubItems.Add(tableJoin.Attributes[ShenGlobal.tabJoin.rightTabCol.ToString()].Value);
+#if UPDATE_20260202
+
+					string property = "";
+					if (tableJoin.Attributes[ShenGlobal.tabJoin.property.ToString()] != null)
+					{
+						property = tableJoin.Attributes[ShenGlobal.tabJoin.property.ToString()].Value;
+					}
+					lvi.SubItems.Add(property);
+
+#endif
 					lvTableJoin.Items.Add(lvi);
 				}
 
@@ -4222,7 +4275,7 @@ namespace Shenlong
 			fileComment = string.Empty;
 			fileAuthor = string.Empty;
 			fileDistinct = false;
-			fileUseJoin = false;
+			fileUseJoin = true;
 			fileHeaderOutput = ((int)ShenGlobal.header.columnName | (int)ShenGlobal.header.comment);
 			fileDownLoad = false;
 			fileEggPermission = string.Empty;
@@ -4999,7 +5052,12 @@ namespace Shenlong
 					attr = xmlShenlongColumn.CreateAttribute(ShenGlobal.tabJoin.rightTabCol.ToString());// @rightTabCol
 					attr.Value = lvi.SubItems[(int)ShenGlobal.tabJoin.rightTabCol].Text;
 					elem.Attributes.Append(attr);
+#if UPDATE_20260202
 
+					attr = xmlShenlongColumn.CreateAttribute(ShenGlobal.tabJoin.property.ToString());   // @property
+					attr.Value = lvi.SubItems[(int)ShenGlobal.tabJoin.property].Text;
+					elem.Attributes.Append(attr);
+#endif
 					root.AppendChild(elem);
 				}
 
@@ -5432,6 +5490,17 @@ namespace Shenlong
 							}
 							ShenGlobal.fromJoin fromJoin = new ShenGlobal.fromJoin(join, way, rightTableName);
 							fromJoin.subQuery = subQuery;
+#if UPDATE_20260202
+
+							string[] property = lvi.SubItems[(int)ShenGlobal.tabJoin.property].Text.Split(sepProp[0]);
+							// 結合条件指定あり？
+							if (!string.IsNullOrEmpty(property[(int)ShenGlobal.tjprop.joinCondition]))
+							{
+								// 結合方法を条件指定に入れ替えておく
+								fromJoin.way = property[(int)ShenGlobal.tjprop.joinCondition];
+							}
+
+#endif
 							fromJoins.Add(fromJoin);
 						}
 
@@ -8593,12 +8662,43 @@ namespace Shenlong
 			}
 		}
 
-		/// <summary>
-		/// テーブル結合条件がダブルクリックされた
+#if UPDATE_20260202
+        /// <summary>
+		/// [プロパティ] コンテキスト メニュー
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void lvTableJoin_MouseDoubleClick(object sender, MouseEventArgs e)
+		private void toolStripMenuJoinProperty_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                ListViewItem lvi = lvTableJoin.SelectedItems[0];
+
+                string[] property = lvi.SubItems[(int)ShenGlobal.tabJoin.property].Text.Split(sepProp[0]);
+
+                TableJoinPropertyDlg tableJoinPropertyDlg = new TableJoinPropertyDlg(property);
+                if (tableJoinPropertyDlg.ShowDialog(this) != DialogResult.OK)
+                    return;
+
+                property = tableJoinPropertyDlg.property;
+                lvi.SubItems[(int)ShenGlobal.tabJoin.property].Text = string.Join(sepProp, property);
+
+                toolTipQueryColumn.SetToolTip(lveQueryColumn, null);
+                ChangeModified(true);
+            }
+            catch (Exception exp)
+            {
+                MessageBox.Show(exp.Message, MethodBase.GetCurrentMethod().Name, MessageBoxButtons.OK, MessageBoxIcon.Stop);
+            }
+        }
+#endif
+
+        /// <summary>
+        /// テーブル結合条件がダブルクリックされた
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void lvTableJoin_MouseDoubleClick(object sender, MouseEventArgs e)
 		{
 			try
 			{
@@ -8608,7 +8708,11 @@ namespace Shenlong
 					return;
 
 				int n;
+#if UPDATE_20260202
+				for ( n = (int)ShenGlobal.tabJoin.rightTabCol; (0 <= n) && (e.X < lvTableJoin.Items[0].SubItems[n].Bounds.X); n-- ) ;
+#else
 				for ( n = lvTableJoin.Items[0].SubItems.Count - 1; (0 <= n) && (e.X < lvTableJoin.Items[0].SubItems[n].Bounds.X); n-- ) ;
+#endif
 #if TABLE_NAME_HAS_ALIAS
 				string tableName, columnName;
 				if ( !ShenGlobal.SplitTableFieldName(lvi.SubItems[n].Text, out tableName, out columnName, null) )
@@ -8815,11 +8919,14 @@ namespace Shenlong
 
 						if ( moveCursor )
 						{
+                            Debug.WriteLine($"Before: Pos={Cursor.Position}, Clip={Cursor.Clip}");
 							Rectangle rect = lveQueryColumn.Items[0].SubItems[colOrder[i]].Bounds;
-							Cursor.Position = lveQueryColumn.PointToScreen(new Point(rect.X + (int)(lveQueryColumn.Columns[j].Width * 0.8F)/*(lveQueryColumn.Columns[j].Width / 2)*/, rect.Y + (rect.Height / 2)));
-						}
+                            Cursor.Clip = Rectangle.Empty;     // 念のため解除
+                            Cursor.Position = lveQueryColumn.PointToScreen(new Point(rect.X + (int)(lveQueryColumn.Columns[j].Width * 0.8F)/*(lveQueryColumn.Columns[j].Width / 2)*/, rect.Y + (rect.Height / 2)));
+                            Debug.WriteLine($"After : Pos={Cursor.Position}, Clip={Cursor.Clip}");
+                        }
 
-						timerReverseQueryColumn.Interval = reverseQueryColumnTime;
+                        timerReverseQueryColumn.Interval = reverseQueryColumnTime;
 						timerReverseQueryColumn.Start();
 						break;
 					}
@@ -8829,9 +8936,9 @@ namespace Shenlong
 			}
 			catch ( Exception exp )
 			{
-				Debug.WriteLine(exp.Message);
-			}
-		}
+                Debug.WriteLine("[" + MethodBase.GetCurrentMethod().Name + "] " + exp.Message);
+            }
+        }
 
 		/// <summary>
 		/// テーブル結合元のカラムの反転表示を解除する
@@ -9342,7 +9449,10 @@ namespace Shenlong
 
 				ListViewItem lvi = new ListViewItem(leftTableColumn);	// ShenCore.tabJoin.leftTabCol
 				lvi.SubItems.Add("=");									// ShenCore.tabJoin.way
-				lvi.SubItems.Add(rightTableColumn);						// ShenCore.tabJoin.rightTabCol
+				lvi.SubItems.Add(rightTableColumn);                     // ShenCore.tabJoin.rightTabCol
+#if UPDATE_20260202
+				lvi.SubItems.Add("");									// SHenCore.tabJoin.property
+#endif
 				lvTableJoin.Items.Add(lvi);
 
 				ChangeModified(true);
@@ -9474,7 +9584,10 @@ namespace Shenlong
 				if ( (listView.Columns.Count == 0) || (lveQueryColumn.GetItemAt(e.X, e.Y) == null) || (lveQueryColumn.Items[0].Bounds.Bottom < e.Y) )
 				{
 					toolTipQueryColumn.Active = false;
-					return;
+#if UPDATE_20260202
+					_toolTipQueryColumn.Hide(lveQueryColumn);
+#endif
+                    return;
 				}
 
 				toolTipQueryColumn.Active = true;
@@ -9482,8 +9595,8 @@ namespace Shenlong
 				int[] colOrder = listView.GetColumnOrder();
 				int n;
 				for ( n = listView.Items[0].SubItems.Count - 1; (0 <= n) && (e.X < listView.Items[0].SubItems[colOrder[n]].Bounds.X); n-- ) ;
-				if ( n == lastQueryColumn )
-					return;
+				if (n == lastQueryColumn)
+                    return;
 
 				string tableFieldName = listView.Columns[colOrder[n]].Text + "." + listView.Items[(int)ShenGlobal.qc.fieldName].SubItems[colOrder[n]].Text;
 				string[] property = listView.Items[(int)ShenGlobal.qc.property].SubItems[colOrder[n]].Text.Split(sepProp[0]);
@@ -9523,11 +9636,20 @@ namespace Shenlong
 					}
 				}
 
-				toolTipQueryColumn.SetToolTip(listView, toolTip.ToString());
+#if UPDATE_20260202
+                // 前のツールチップを明示的に隠す → 位置付きで再表示
+                _toolTipQueryColumn.Hide(listView);
 
-				lastQueryColumn = n;
-			}
-			catch ( Exception exp )
+                // マウスの少し右下に表示（必要なら DPI を考慮）
+                int offsetX = 16, offsetY = 16;
+                _toolTipQueryColumn.Show(toolTip.ToString(), listView, e.Location.X + offsetX, e.Location.Y + offsetY, _toolTipQueryColumn.AutoPopDelay);
+#else
+				toolTipQueryColumn.SetToolTip(listView, toolTip.ToString());
+#endif
+
+                lastQueryColumn = n;
+            }
+            catch ( Exception exp )
 			{
 				Debug.WriteLine("[" + MethodBase.GetCurrentMethod().Name + "] " + exp.Message);
 			}
@@ -9947,11 +10069,70 @@ namespace Shenlong
 		}
 		#endregion
 
-		#region MyMessageBox クラス
+#if UPDATE_20260202
 		/// <summary>
-		/// MyMessageBox
+		/// テーブル結合でマウスが移動した
 		/// </summary>
-		public class MyMessageBox
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void lvTableJoin_MouseMove(object sender, MouseEventArgs e)
+		{
+			try
+			{
+				ListView listView = (ListView)sender;
+				var info = listView.HitTest(e.Location);
+				var item = info.Item;
+				var sub = info.SubItem;
+
+				// サブアイテムなし領域では非表示
+				if (item == null || sub == null)
+				{
+					_toolTipTableJoin.Hide(listView);
+					lastTableJoinItemIndex = -1;
+					return;
+				}
+
+				var itemIndex = info.Item.Index;
+				if (itemIndex == lastTableJoinItemIndex)
+					return;
+
+				StringBuilder toolTip = new StringBuilder();
+
+				var lvi = listView.Items[itemIndex];
+
+				var property = lvi.SubItems[(int)ShenGlobal.tabJoin.property].Text.Split(sepProp[0]);
+
+				if (property != null && property.Length != 0)
+				{
+					if (!string.IsNullOrEmpty(property[(int)ShenGlobal.tjprop.joinCondition]))
+					{
+						toolTip.Append($"結合条件: {property[(int)ShenGlobal.tjprop.joinCondition]}");
+					}
+
+					// 前のツールチップを明示的に隠す → 位置付きで再表示
+					_toolTipTableJoin.Hide(listView);
+
+					// マウスの少し右下に表示（必要なら DPI を考慮）
+					int offsetX = 16, offsetY = 16;
+					_toolTipTableJoin.Show(toolTip.ToString(), listView, e.Location.X + offsetX, e.Location.Y + offsetY, _toolTipTableJoin.AutoPopDelay);
+				}
+
+				lastTableJoinItemIndex = itemIndex;
+
+				return;
+			}
+			catch (Exception exp)
+			{
+				Debug.WriteLine("[" + MethodBase.GetCurrentMethod().Name + "] " + exp.Message);
+			}
+		}
+#endif
+
+        #region MyMessageBox クラス
+        /// <summary>
+        /// MyMessageBox
+        /// </summary>
+        public class MyMessageBox
 		{
 			static public Form _mainForm = null;
 
@@ -10044,6 +10225,6 @@ namespace Shenlong
 				}
 			}
 		}
-		#endregion
+        #endregion
     }
 }

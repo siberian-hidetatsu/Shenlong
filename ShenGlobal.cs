@@ -3,6 +3,7 @@
 //#define	ENABLED_SUBQUERY			// サブクエリのロジックを有効にする（実際にはプロジェクト プロパティの[ビルド][条件付きコンパイル定数]で設定する）
 //#define	NEW_GETPLAINTABLEFIELDNAME	// 新しいGetPlainTableFieldName関数を使う（実際にはプロジェクト プロパティの[ビルド][条件付きコンパイル定数]で設定する）
 #define	UPDATE_20131204
+#define	UPDATE_20260202
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -65,7 +66,13 @@ namespace Shenlong
 		public enum qc {											// クエリー項目のアイテム（兼タグ名）
 			fieldName, showField, expression, value1, value2, rColOp, orderBy, groupFunc, property };
 
-		public enum tabJoin { leftTabCol, way, rightTabCol };		// [テーブル結合] のサブアイテム（兼タグ名）
+#if UPDATE_20260202
+		public enum tabJoin { leftTabCol, way, rightTabCol, property };       // [テーブル結合] のサブアイテム（兼タグ名）
+
+		public enum tjprop { joinCondition};								// テーブル結合のプロパティ
+#else
+		public enum tabJoin { leftTabCol, way, rightTabCol };       // [テーブル結合] のサブアイテム（兼タグ名）
+#endif
 
 		public enum header { columnName = 0x0001, comment = 0x0002 };	// ヘッダの出力フラグ
 
@@ -906,12 +913,25 @@ namespace Shenlong
 				if ( fromJoin.equalColumn.Count != 0 )
 				{
 					fromJoinSql.Append(" ON ");
+#if UPDATE_20260202
+					// 通常の結合条件
+					if (Char.IsSymbol(fromJoin.way[0]))
+					{
+#endif
 					foreach ( string equalColumn in fromJoin.equalColumn )
 					{
 						fromJoinSql.Append("(" + equalColumn + ")");
 						fromJoinSql.Append(" AND ");
 					}
 					fromJoinSql.Length -= 5;	// 5:" AND "
+#if UPDATE_20260202
+					}
+					// プロパティでの結合条件指定
+					else
+					{
+						fromJoinSql.Append($"({fromJoin.way})");
+					}
+#endif
 				}
 
 				fromJoinSql.Append(crlf);
@@ -1179,16 +1199,16 @@ namespace Shenlong
 		}
 #endif
 
-		/// <summary>
-		/// 入力された抽出条件があればクエリー項目にセットする
-		/// </summary>
-		/// <param name="selectParams"></param>
-		/// <param name="bubbles"></param>
-		/// <param name="plainTableFieldName"></param>
-		/// <param name="paramNames"></param>
-		/// <param name="expression"></param>
-		/// <param name="value1"></param>
-		/// <param name="value2"></param>
+					/// <summary>
+					/// 入力された抽出条件があればクエリー項目にセットする
+					/// </summary>
+					/// <param name="selectParams"></param>
+					/// <param name="bubbles"></param>
+					/// <param name="plainTableFieldName"></param>
+					/// <param name="paramNames"></param>
+					/// <param name="expression"></param>
+					/// <param name="value1"></param>
+					/// <param name="value2"></param>
 		public static void SetShenlongParam(Dictionary<string, string> selectParams, string baseURI, string bubbles, string plainTableFieldName, ref Dictionary<string, int> paramNames, ref string expression, ref string value1, ref string value2)
 		{
 			if ( (selectParams == null)/* || (expression.Length == 0)*/ )
@@ -1912,6 +1932,9 @@ namespace Shenlong
 		/// <param name="progNo"></param>
 		public static void WriteAccessLog(string[] writeLogDsnUidPwd, string serviceName, string userName, List<string> tableNames, pno progNo)
 		{
+#if UPDATE_20260202
+			return;
+#endif
 			OleDbConnection oraInfoPub = null;
 			OleDbCommand oraCmd = null;
 
