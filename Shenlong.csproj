@@ -124,6 +124,28 @@
     <Compile Include="FilePropertyDlg.Designer.cs">
       <DependentUpon>FilePropertyDlg.cs</DependentUpon>
     </Compile>
+    <Compile Include="ProgUpdateMessage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ProgUpdateMessage.designer.cs">
+      <DependentUpon>ProgUpdateMessage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ProgUpdateMessage1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ProgUpdateMessage.resx</DependentUpon>
+    </Compile>
+    <Compile Include="ProgUpdateRemoteCheck.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ProgUpdateRemoteCheck.Designer.cs">
+      <DependentUpon>ProgUpdateRemoteCheck.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ProgUpdateRemoteCheck1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ProgUpdateRemoteCheck.resx</DependentUpon>
+    </Compile>
     <Compile Include="TableJoinPropertyDlg.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -162,14 +184,6 @@
       <DependentUpon>OptionDlg.cs</DependentUpon>
     </Compile>
     <Compile Include="ProgUpdateClass.cs" />
-    <Compile Include="ProgUpdateMessage.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ProgUpdateMessage.designer.cs" />
-    <Compile Include="ProgUpdateRemoteCheck.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ProgUpdateRemoteCheck.Designer.cs" />
     <Compile Include="ShenGlobal.cs" />
     <Compile Include="Shenlong.cs">
       <SubType>Form</SubType>
@@ -187,6 +201,16 @@
       <SubType>Designer</SubType>
       <DependentUpon>ExecuteQueryDlg.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ProgUpdateMessage.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ProgUpdateMessage1.Designer.cs</LastGenOutput>
+      <DependentUpon>ProgUpdateMessage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProgUpdateRemoteCheck.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ProgUpdateRemoteCheck1.Designer.cs</LastGenOutput>
+      <DependentUpon>ProgUpdateRemoteCheck.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="TableJoinPropertyDlg.resx">
       <DependentUpon>TableJoinPropertyDlg.cs</DependentUpon>
     </EmbeddedResource>
@@ -197,14 +221,6 @@
     <EmbeddedResource Include="OptionDlg.resx">
       <SubType>Designer</SubType>
       <DependentUpon>OptionDlg.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ProgUpdateMessage.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>ProgUpdateMessage1.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ProgUpdateRemoteCheck.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>ProgUpdateRemoteCheck1.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
