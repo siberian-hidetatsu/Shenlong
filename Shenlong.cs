@@ -2138,8 +2138,41 @@ namespace Shenlong
 								  "order by\r\n" +
 								  " all_ind_columns.index_name,\r\n" +
 								  " all_ind_columns.column_position";
-						}
-					}
+#if UPDATE_20260121
+                            sql = "select\r\n" +
+                                  " aic.table_owner,\r\n" +
+                                  " aic.table_name,\r\n" +
+                                  " aic.index_name,\r\n" +
+                                  " ai.uniqueness,\r\n" +               // UNIQUE or NONUNIQUE
+                                  " ai.index_type,\r\n" +               // NORMAL, BITMAP, FUNCTION - BASED NORMAL ‚È‚Ç
+                                  " ai.visibility,\r\n" +               // VISIBLE / INVISIBLE
+                                  " ai.status as valid_status,\r\n" +   // VALID / UNUSABLE
+                                  " aic.column_position,\r\n" +
+                                  " aic.column_name,\r\n" +
+                                  " ac.constraint_name,\r\n" +
+                                  " ac.constraint_type,\r\n" +          // P / U
+                                  " ac.deferrable,\r\n" +
+                                  " ac.deferred,\r\n" +
+                                  " ac.status\r\n" +
+                                  "from\r\n" +
+                                 $" all_ind_columns{_dbLink} aic\r\n" +
+                                 $" join all_indexes{_dbLink} ai\r\n" +
+                                  "  on ai.owner = aic.index_owner\r\n" +
+                                  "   and ai.index_name = aic.index_name\r\n" +
+                                 $" left join all_constraints{_dbLink} ac\r\n" +
+                                  "  on ac.owner = aic.table_owner\r\n" +
+                                  "   and ac.table_name = aic.table_name\r\n" +
+                                  "   and ac.index_name = aic.index_name\r\n" +
+                                  "   and ac.constraint_type IN('P','U')\r\n" +
+                                  "where\r\n" +
+                                 $" aic.table_name = '{tableName}'\r\n" +
+                                 $" and aic.table_owner = '{tableOwner}'\r\n" +
+                                  "order by\r\n" +
+                                  " aic.index_name,\r\n" +
+                                  " aic.column_position\r\n";
+#endif
+                        }
+                    }
 				}
 #else
 				if ( synonym )
