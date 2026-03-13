@@ -250,6 +250,7 @@
   <ItemGroup>
     <Content Include="App.ico" />
     <Content Include="images\textClear.ico" />
+    <Content Include="SQL.txt" />
     <None Include="images\customTableSelect.ico" />
     <None Include="images\qcProperty.ico" />
     <None Include="images\noCheckSameColumn.ico" />

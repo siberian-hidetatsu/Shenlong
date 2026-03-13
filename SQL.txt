@@ -1,0 +1,307 @@
+﻿■ テーブルヘッダ ==============================================================
+
+C. 「PRIMARY KEY のインデックスだけを見たい（重複を避けたい）」
+SELECT
+    t.table_name                                   AS "テーブル名",
+    t.tablespace_name                              AS "領域名",
+    TO_CHAR(t.initial_extent/1024/1024) || 'M'     AS "初期領域サイズ",
+    i.index_name                                   AS "PKインデックス名",
+    i.tablespace_name                              AS "PK領域名",
+    TO_CHAR(i.initial_extent/1024/1024) || 'M'     AS "PK初期領域サイズ",
+    TO_CHAR(s.initial_extent/1024/1024) || 'M'     AS "SSLOG初期SIZE"
+FROM
+    dba_tables t
+    INNER JOIN dba_constraints c
+        ON c.owner           = t.owner
+       AND c.table_name      = t.table_name
+       AND c.constraint_type = 'P'           -- PRIMARY KEY 制約
+    INNER JOIN dba_indexes i
+        ON i.owner       = c.owner
+       AND i.index_name  = c.index_name      -- 制約に紐づくインデックス
+    LEFT JOIN dba_segments s
+        ON s.owner        = t.owner
+       AND s.segment_name = t.table_name
+       AND s.segment_type = 'TABLE'
+WHERE
+    t.table_name = 'ZAIKO'     -- 任意
+ORDER BY
+    t.owner, t.table_name;
+
+-------- 最終版 --------
+select
+  tbl.table_name                       as "テーブル名",
+  tbl.tablespace_name                  as "領域名",
+  case
+    when tbl.initial_extent < 1024 * 1024 then
+      to_char(round(tbl.initial_extent / 1024)) || 'K'
+    else
+      to_char(round(tbl.initial_extent / 1024 / 1024)) || 'M'
+  end                                  as "初期領域サイズ",
+  ind.index_name                       as "主キー名",
+  ind.tablespace_name                  as "主キー領域名",
+  case
+    when ind.initial_extent < 1024 * 1024 THEN
+      to_char(round(ind.initial_extent / 1024)) || 'K'
+    else
+      to_char(round(ind.initial_extent / 1024 / 1024)) || 'M'
+  end                                  as "主キー初期領域サイズ",
+  case
+    when seg.initial_extent < 1024 * 1024 THEN
+      to_char(round(seg.initial_extent / 1024)) || 'K'
+    else
+      to_char(round(seg.initial_extent / 1024 / 1024)) || 'M'
+  end                                  as "SSLOG初期SIZE"
+from
+  dba_tables tbl
+  inner join dba_constraints cons
+          on cons.owner           = tbl.owner
+         and cons.table_name      = tbl.table_name
+         and cons.constraint_type = 'P'          -- PRIMARY KEY 制約
+  inner join dba_indexes ind
+          on ind.owner       = cons.owner
+         and ind.index_name  = cons.index_name   -- 制約に紐づくインデックス
+         and ind.table_owner = tbl.owner
+         and ind.table_name  = tbl.table_name
+  left join dba_segments seg
+          on seg.owner        = tbl.owner
+         and seg.segment_name = tbl.table_name
+         and seg.segment_type = 'TABLE'
+where
+  tbl.owner      = 'USER' and
+  tbl.table_name = 'ZAIKO'
+order by
+  tbl.owner,
+  tbl.table_name
+
+
+■ テーブル項目 ==============================================================
+
+select
+  cols.table_name                                     as "テーブル名",
+  cols.column_name                                    as "項目名",
+  cols.data_type                                      as "属性",
+  case when cols.data_type='CHAR' or cols.data_type='VARCHAR2' then cols.data_length else cols.data_precision end as "桁数＿整数部",
+  case when cols.data_scale=0 then null else cols.data_scale end as "桁数＿小数部",
+  (select
+    position
+   from
+    user_cons_columns ucc
+   where
+    ucc.table_name = cols.table_name and ucc.column_name = cols.column_name and ucc.position is not null
+  )                                                   as "主キー",
+  cols.data_default                                   as "初期値",
+  case cols.nullable when 'N' then '○' else NULL end as "NULL禁止"
+from
+  all_tab_columns cols
+where
+  cols.owner = 'USER' and
+  cols.table_name='RESULT'
+order by
+  cols.table_name,
+  cols.column_id
+
+※ data_default 列は LONG 型なので TRIM するとエラーになる。
+
+-------- Copilot 提案版 --------
+-------- 最終版 --------
+select
+  tcol.table_name                      as "テーブル名",
+                                                                                  -- tcol.column_id,
+  tcol.column_name                     as "項目名",
+  tcol.data_type                       as "属性",
+
+  /* 文字列型の長さ（文字 or バイトを明示）※ NCHAR/NVARCHAR2 は文字単位（CHAR_USED='C'）になる */
+  case
+    when tcol.data_type in ('CHAR','VARCHAR2','NCHAR','NVARCHAR2') then
+      case when tcol.char_used = 'C'
+        then to_char(tcol.char_length) || ' (CHAR)'
+        else to_char(tcol.data_length) || ' (BYTE)'
+      end
+    when tcol.data_type = 'NUMBER' then
+      /* NUMBER 表示（整数/小数に分離したい場合は下の列を見てください） */
+      case
+        when tcol.data_precision is null and tcol.data_scale is null then '—'    -- NUMBER(未指定)
+        when tcol.data_scale = 0 then to_char(tcol.data_precision)               -- NUMBER(p)
+        else to_char(tcol.data_precision) || ',' || to_char(tcol.data_scale)     -- NUMBER(p,s) を別列に
+      end
+    else
+      null
+  end                                  as "桁数_表示補助",
+
+  /* 整数部・小数部を分けたいとき（従来の要件に合わせた列） */
+  case
+    when tcol.data_type in ('CHAR','VARCHAR2','NCHAR','NVARCHAR2')
+      then tcol.data_length
+    when tcol.data_type = 'NUMBER'
+      then tcol.data_precision
+    else
+      null
+  end                                  as "桁数＿整数部",
+  case
+    when tcol.data_type = 'NUMBER' and nvl(tcol.data_scale, 0) <> 0
+      then tcol.data_scale
+    else
+      null
+  end                                  as "桁数＿小数部",
+
+  /* 主キーの列順（PKでない列はNULL） */
+  ccol.position                        as "主キー",
+
+  tcol.data_default                    as "初期値",
+
+  case tcol.nullable when 'N' then '○' else null end as "NULL禁止",
+
+  /* 任意：コメントを付けたい場合 */
+  com.comments                         as "コメント"
+
+from
+  all_tab_columns tcol
+  /* 主キー判定：制約と列をJOIN */
+  left join all_constraints cons
+         on cons.owner           = tcol.owner
+        and cons.table_name      = tcol.table_name
+        and cons.constraint_type = 'P'
+  left join all_cons_columns ccol
+         on ccol.owner           = cons.owner
+        and ccol.table_name      = cons.table_name
+        and ccol.constraint_name = cons.constraint_name
+        and ccol.column_name     = tcol.column_name
+
+  /* 任意：コメント */
+  left join all_col_comments com
+         on com.owner       = tcol.owner
+        and com.table_name  = tcol.table_name
+        and com.column_name = tcol.column_name
+
+where
+  tcol.owner      = 'USER' and
+  tcol.table_name = 'RESULT'
+  /* 任意：隠し列を除外する場合 */
+  -- and nvl(tcol.hidden_column, 'NO') = 'NO'
+
+order by
+  tcol.owner,
+  tcol.table_name,
+  tcol.column_id
+
+
+■ インデックスヘッダ ==============================================================
+
+✅ 最も簡潔で実用的な SQL（PRIMARY KEY インデックス除外）
+SELECT
+    ind.index_name       AS "インデックス名",
+    ind.tablespace_name  AS "領域名",
+    TO_CHAR(ind.initial_extent/1024/1024) || 'M' AS "初期領域サイズ",
+    TO_CHAR(ind.next_extent/1024/1024)    || 'M' AS "追加領域サイズ",
+    ind.pct_increase     AS "追加割合",
+    ind.uniqueness       AS "ユニークFG"
+FROM
+    user_indexes ind
+WHERE
+    ind.table_name = 'TRUCK'
+    AND ind.index_name NOT IN (
+        SELECT index_name
+        FROM user_constraints
+        WHERE table_name = 'TRUCK'
+          AND constraint_type = 'P'   -- PRIMARY KEY を除外
+    )
+ORDER BY
+    ind.index_name;
+
+-------- 最終版 --------
+select
+  ind.table_name                       as "テーブル名",
+  ind.index_name                       as "インデックス名",
+  ind.tablespace_name                  as "領域名",
+  case
+    when ind.initial_extent < 1024 * 1024 then
+      to_char(round(ind.initial_extent / 1024)) || 'K'
+    else
+      to_char(round(ind.initial_extent / 1024 / 1024)) || 'M'
+  end                                  as "初期領域サイズ",
+  null                                 as "追加領域サイズ",
+  null                                 as "追加割合",
+  decode(ind.uniqueness,'UNIQUE','TRUE','NONUNIQUE','FALSE') as "ユニークFG"
+from
+  all_indexes ind
+where
+  ind.owner      = 'USER' and
+  ind.table_name = 'TRUCK' and
+  --ind.index_name not in (
+  --  select
+  --    cons.index_name
+  --  from
+  --    all_constraints cons
+  --  where
+  --    cons.table_name      = ind.table_name and
+  --    cons.owner           = ind.owner and    -- ★ スキーマも合わせるのが重要
+  --    cons.constraint_type = 'P'              -- PRIMARY KEY を除外
+  --)
+  not exists (
+    select
+      1
+    from
+      all_constraints cons
+    where
+      cons.owner           = ind.owner and
+      cons.table_name      = ind.table_name and    -- 読みやすさのため保持（冗長）
+      cons.constraint_type = 'P' and               -- PK
+      cons.index_name      = ind.index_name        -- インデックス名一致でPKを除外
+  )
+order by
+  ind.owner,
+  ind.table_name,
+  ind.index_name
+
+
+■ インデックス項目 ==============================================================
+
+-------- 最終版 --------
+select
+  ind.table_name                       as "テーブル名",
+  cols.index_name                      as "インデックス名",
+  cols.column_name                     as "項目名",
+  case nvl(cols.descend,'ASC')
+    when 'ASC'  then '昇順'
+    when 'DESC' then '降順'
+  end                                  as "ソート"
+from
+  all_indexes ind 
+  left join all_ind_columns cols
+         on ind.owner      = cols.index_owner
+        and ind.table_name = cols.table_name
+        and ind.index_name = cols.index_name
+where
+  ind.owner      = 'USER' and
+  ind.table_name = 'TRUCK' and
+  --ind.index_name not in (
+  --  select
+  --    cons.index_name
+  --  from
+  --    all_constraints cons
+  --  where
+  --    cons.table_name      = ind.table_name and
+  --    cons.owner           = ind.owner and    -- ★ owner も一致させるのが重要
+  --    cons.constraint_type = 'P'              -- PRIMARY KEY を除外
+  --)
+  not exists (
+    select
+      1
+    from
+      all_constraints cons
+    where
+      cons.owner           = ind.owner and
+      cons.table_name      = ind.table_name and    -- 読みやすさのため保持（冗長）
+      cons.constraint_type = 'P' and               -- PK
+      cons.index_name      = ind.index_name        -- インデックス名一致でPKを除外
+  )
+order by
+  ind.owner,
+  ind.table_name,
+  cols.index_name,
+  cols.column_position
+
+
+-------- Excel --------
+テーブル名のA列とテーブル項目のA列が一致する行を抽出する。
+=FILTER(テーブル項目!A:H, ISNUMBER(MATCH(テーブル項目!A:A, テーブル名!A:A, 0)))
