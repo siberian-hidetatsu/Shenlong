@@ -1,3 +1,4 @@
+#define	UPDATE_20260313
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -315,17 +316,27 @@ namespace Shenlong
 				SetExpertSettingsCheckBox(Shenlong.KEY_SHOW_QUERY_RECORD_COUNT, true);
 
 				// TABLE, VIEW のテーブル名を取得する SELECT 文
+#if UPDATE_20260313
+				string sql = "SELECT t.owner AS owner,t.table_name AS tname,'TABLE' AS tabtype,c.comments AS comments FROM all_tables t LEFT JOIN all_tab_comments c ON c.owner = t.owner AND c.table_name = t.table_name AND NVL(c.table_type, 'TABLE') = 'TABLE' UNION SELECT v.owner AS owner,v.view_name AS tname,NVL(v.view_type, 'VIEW') AS tabtype,c.comments AS comments FROM all_views v LEFT JOIN all_tab_comments c ON c.owner = v.owner AND c.table_name = v.view_name AND NVL(c.table_type, 'VIEW') IN ('VIEW', NVL(v.view_type, 'VIEW')) ORDER BY owner,tname";
+#else
 				//string sql = "select sub.owner,sub.tname,sub.tabtype,comments from all_tab_comments,(select all_tables.owner,all_tables.table_name as tname,tab.tabtype from all_tables,tab where all_tables.table_name=tab.tname(+)) sub where sub.tname=all_tab_comments.table_name(+)";
 				string sql = "select sub.owner,sub.tname,sub.tabtype,comments from all_tab_comments ,(select all_tables.owner as owner,all_tables.table_name as tname,tab.tabtype as tabtype from all_tables,tab where all_tables.table_name = tab.tname(+))sub where sub.tname = all_tab_comments.table_name(+) and sub.owner = all_tab_comments.owner(+) union select all_views.owner as owner,all_views.view_name as tname,all_views.view_type as tabtype,comments from all_tab_comments,all_views where all_views.view_name = all_tab_comments.table_name(+)";
-				SetExpertSettingsTextBox(Shenlong.KEY_SELECT_TABLE_NAME, sql + " ");
+#endif
+                SetExpertSettingsTextBox(Shenlong.KEY_SELECT_TABLE_NAME, sql + " ");
 
 				// SYNONYM のテーブル名を取得する SELECT 文
 				sql = "select ...";
 				SetExpertSettingsTextBox(Shenlong.KEY_SELECT_SYNONYM_NAME, sql);
 
-				// 選択されたテーブルのカラムを取得する SELECT 文
+                // 選択されたテーブルのカラムを取得する SELECT 文
+#if UPDATE_20260313
+                // 元SQL同様、OWNER では結ばない（注意：同名テーブルが他スキーマにあるとコメントが多重ヒットする可能性あり）
+                // WHERE c.owner = '%owner%' AND c.table_name = '%tablename%'
+                sql = "SELECT c.column_name,c.data_type,c.nullable,NVL(c.data_precision, c.data_length) AS length,c.data_scale,com.comments FROM all_tab_columns%dblink% c LEFT JOIN all_col_comments%dblink% com ON com.table_name = c.table_name AND com.column_name = c.column_name WHERE c.table_name = '%tablename%' ORDER BY c.column_id";
+#else
 				sql = "select all_tab_columns.column_name,all_tab_columns.data_type,all_tab_columns.nullable,nvl(all_tab_columns.data_precision,all_tab_columns.data_length) as length,all_tab_columns.data_scale,all_col_comments.comments from all_tab_columns%dblink%,all_col_comments%dblink% where all_tab_columns.table_name='%tablename%' and ((all_tab_columns.column_name=all_col_comments.column_name(+)) and (all_tab_columns.table_name=all_col_comments.table_name(+))) order by all_tab_columns.column_id";
-				SetExpertSettingsTextBox(Shenlong.KEY_SELECT_COLUMNS, sql + " ");
+#endif
+                SetExpertSettingsTextBox(Shenlong.KEY_SELECT_COLUMNS, sql + " ");
 
 				// カラム一覧の背景色名
 				SetExpertSettingsTextBox(Shenlong.KEY_COLUMN_LIST_BACK_COLOR_NAME, "GhostWhite" + " ");
